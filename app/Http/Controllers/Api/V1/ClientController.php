@@ -8,7 +8,8 @@ use App\Models\Client;
 use App\Models\Business;
 use App\Models\Permission;
 use Illuminate\Http\Request;
-
+use PhpParser\Node\Stmt\Else_;
+use App\Http\Controllers\Api\V1\FilterController;
 
 class ClientController extends Controller
 {
@@ -29,27 +30,38 @@ class ClientController extends Controller
         // Specific Query (paginated)
         if($request->filled('search')){
 
-            if(strlen($request->search) >= 3)
-            {
-                return Client::select(['id_cliente', 'razon_social', 'domicilio', 'cuit'])
-                    ->where('id_cliente', 'LIKE', "%$request->search%")
-                    ->orWhere('razon_social', 'LIKE', "%$request->search%")
-                    ->orWhere('domicilio', 'LIKE', "%$request->search%")
-                    ->orWhere('cuit', 'LIKE', "%$request->search%")
-                    ->paginate(20);
 
-            } else {
-                if(is_numeric($request->search))
-                {
-                    return Client::select(['id_cliente', 'razon_social'])
-                        ->where('id_cliente', 'LIKE', "%$request->search%")
+            $filter = $request->filled('filter') ? $request->filter : 'razon_social';
+
+
+            // Validate
+            if(!(new FilterController)->validateSearch($filter, $request->search, 'clients')){
+
+                return response()->json([
+                    'message' => 'query error'
+                ], 400);
+
+            }
+
+            // Query
+            if($filter === 'id_cliente'){
+
+                return Client::select(['id_cliente', 'razon_social'])
+                        ->where('id_cliente', intval($request->search))
                         ->paginate(20);
 
-                } else {
-                    return response()->json([
-                        'message' => 'search too short'
-                    ], 400);    ##############################################################333
-                }
+            } else if($filter === 'razon_social'){
+
+                return Client::select(['id_cliente', 'razon_social'])
+                        ->where('razon_social', 'LIKE', "%$request->search%")
+                        ->paginate(20);
+
+            } else {
+
+                return Client::select(['id_cliente', 'razon_social', $filter])
+                    ->where($filter, 'LIKE', "%$request->search%")
+                    ->paginate(20);
+
             }
 
         } else {
