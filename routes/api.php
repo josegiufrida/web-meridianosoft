@@ -41,7 +41,7 @@ Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController:
 
 
 Route::get('v1.0/filters/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters']);
-    
+
 
 
 /*
