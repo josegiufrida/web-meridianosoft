@@ -31,7 +31,10 @@ Route::apiResources([
 
 Route::post('login', [App\Http\Controllers\Api\LoginController::class, 'login']);
 
-Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
+Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout'])
+    ->middleware('auth:sanctum');
+
+
 
 
 
@@ -40,7 +43,8 @@ Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController:
     ->middleware('auth:sanctum');
 
 
-Route::get('v1.0/filters/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters']);
+Route::get('v1.0/filters/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters'])
+    ->middleware('auth:sanctum');
 
 
 

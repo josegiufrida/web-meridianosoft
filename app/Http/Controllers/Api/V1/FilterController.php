@@ -41,7 +41,7 @@ class FilterController extends Controller
         ];
 
         $validator = Validator::make($array, [
-            'id_cliente'   => 'numeric|max:255',
+            'id_cliente'   => 'numeric|max:1000000',
             'razon_social' => 'min:2|max:255',
             'domicilio'    => 'min:2|max:255',
             'localidad'    => 'min:2|max:255',
@@ -99,6 +99,22 @@ class FilterController extends Controller
     }
 
 
+
+    public function defaultFilter($table){
+
+        $default_filter = [
+            
+            'clients' => 'razon_social'
+
+        ];
+
+        return $default_filter[$table];
+
+    }
+
+
+
+
     public function names($id){
 
         $names = [
@@ -135,10 +151,18 @@ class FilterController extends Controller
             $response = [];
 
             foreach($this->columns($table) as $id){
-                array_push($response, [
+
+                $array = [
                     'id' => $id,
                     'name' => $this->names($id)
-                ]);
+                ];
+	
+                if($this->defaultFilter($table) === $id){
+                    $array['default'] = true;
+                }
+	
+                array_push($response, $array);
+
             }
 
             return response()->json($response);
@@ -146,7 +170,8 @@ class FilterController extends Controller
         } else {
 
             return response()->json([
-                'message' => 'table not found'
+                'error' => 'not-found',
+                'message' => 'La tabla no existe'
             ], 404);
 
         }

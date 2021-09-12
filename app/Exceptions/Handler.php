@@ -37,5 +37,17 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        
+        // Sanctum unauthenticated message customized
+        $this->renderable(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'error' => 'unauthenticated',
+                    'message' => 'Usuario no logeado'
+                ], 401);
+            }
+        });
+
     }
 }

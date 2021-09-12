@@ -23,10 +23,12 @@ class ClientController extends Controller
         // Verify permission
         if (!$request->user()->tokenCan('clientes')) {
             return response()->json([
-                'message' => 'unauthorized'
-            ], 401);
+                'error' => 'unauthorized',
+                'message' => 'No posee permisos para acceder a este recurso'
+            ], 403);
         }
 
+ 
         // Specific Query (paginated)
         if($request->filled('search')){
 
@@ -38,7 +40,8 @@ class ClientController extends Controller
             if(!(new FilterController)->validateSearch($filter, $request->search, 'clients')){
 
                 return response()->json([
-                    'message' => 'query error'
+                    'error' => 'invalid-query',
+                    'message' => 'La busqueda no es valida',
                 ], 400);
 
             }
@@ -87,8 +90,9 @@ class ClientController extends Controller
         // Verify permission
         if (!$request->user()->tokenCan('clientes')) {
             return response()->json([
-                'message' => 'unauthorized'
-            ], 401);
+                'error' => 'unauthorized',
+                'message' => 'No posee permisos para acceder a este recurso'
+            ], 403);
         }
 
         // Truncate & Insert new data
@@ -136,8 +140,6 @@ class ClientController extends Controller
             // Insert
             Client::upsert($insert_array, ['id_cliente']);
 
-            // Table update timestamp
-
             fclose($handle);
 
             return response()->json([
@@ -146,8 +148,9 @@ class ClientController extends Controller
             
         } else {
             return response()->json([
-                'message' => 'file error'
-            ], 401);
+                'error' => 'invalid-file',
+                'message' => 'El archivo no fue enviado o no es valido'
+            ], 400);
         }
     }
 
@@ -157,16 +160,37 @@ class ClientController extends Controller
      * @param  \App\Models\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function show(Client $client, Request $request)
+    public function show($id_cliente, Request $request)
     {
         // Verify permission
         if (!$request->user()->tokenCan('clientes')) {
             return response()->json([
-                'message' => 'unauthorized'
-            ], 401);
+                'error' => 'unauthorized',
+                'message' => 'No posee permisos para acceder a este recurso'
+            ], 403);
         }
 
-        return $client;
+
+        // Validate
+        if(!(new FilterController)->validateSearch('id_cliente', $id_cliente, 'clients')){
+
+            return response()->json([
+                'error' => 'invalid-query',
+                'message' => 'El ID ingresado es invalido',
+            ], 400);
+
+        }
+        
+        $result = Client::where('id_cliente', $id_cliente)->first();
+        
+        if($result){
+            return $result;
+        } else {
+            return response()->json([
+                'error' => 'not-found',
+                'message' => 'El registro no existe'
+            ], 404);
+        }
     }
 
     /**
