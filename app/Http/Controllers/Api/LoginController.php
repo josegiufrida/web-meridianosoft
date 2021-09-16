@@ -5,34 +5,83 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Api\PermissionController;
+use App\Http\Requests\LoginRequest;
 use App\Models\Company;
+use App\Models\Collection;
+use App\Models\CollectionUpdate;
 use App\Models\User;
+use App\Models\UserPermission;
+
+
 
 class LoginController extends Controller
 {
-    public function login(Request $request, PermissionController $permissions)
+    public function login(LoginRequest $request)
     {
-        $this->validateLogin($request);
 
         if(Auth::attempt(['username' => $request->username, 'password' => $request->password, 'active' => 1], $remember = true)){
 
-            // Active user
-            if(!$request->user()->active){
-                return response()->json([
-                    'error' => 'unauthorized',
-                    'message' => 'El usuario esta deshabilitado'
-                ], 403);
-            }
+
+            $user_id = $request->user()->user_id;
+            $company_id = $request->user()->company_id;
+
 
             // Company
-            $company = Company::where('company_id', $request->user()->company_id)->first();
+            // query_active === true
+            $company = Company::where('company_id', $company_id)
+                ->where('query_active', 1)
+                ->first();
 
             if(!$company){
+
+                // logout
+                $request->user()->currentAccessToken()->delete();
+
                 return response()->json([
                     'error' => 'not-found',
                     'message' => 'Ha ocurrido un error en el servidor'
                 ], 404);
+
+            }
+
+
+            // Data of collections
+            // Only collections that user have access
+            $collections = [];       
+
+            // Set abilities for token
+            // Used for verify if user have access to query a collection -> tokenCan('...')
+            // ['clientes', 'proveedores', ...];
+            $abilities = [];
+
+
+            // Get user permissions 
+            // access === true
+            $user_permissions = UserPermission::where('user_id', $user_id)->where('access', 1)->get();
+            
+    
+            foreach($user_permissions as $permission){
+    
+                $collection = $permission->collection;
+    
+                // Last time collection was update
+                $updated_at = CollectionUpdate::where('company_id', $company_id)
+                    ->where('collection_id', $collection->collection_id)
+                    ->first()
+                    ->updated_at;
+    
+                
+                array_push($collections, [
+                    'collection_id' => $collection->collection_id,
+                    'collection_name' => $collection->collection_name,
+                    'name' => $collection->name,
+                    'updated_at' => $updated_at,
+                    'primary_key' => $collection->primary_key
+                ]);
+
+                
+                array_push($abilities, $collection->collection_name);
+    
             }
 
 
@@ -41,7 +90,7 @@ class LoginController extends Controller
                 'token' => $request->user()
                     ->createToken(
                         $request->device,
-                        $permissions->getPermissions($request->user()->user_id)
+                        $abilities
                     )
                     ->plainTextToken,
 
@@ -49,10 +98,12 @@ class LoginController extends Controller
 
                 'company_id' => $company->company_id,
                 'company_name' => $company->name,
+                'collections' => $collections
             ];
 
+
             // Update last login
-            $user = User::find($request->user()->user_id);
+            $user = User::find($user_id);
             $user->last_login = now();
             $user->save();
 
@@ -61,21 +112,12 @@ class LoginController extends Controller
 
         }
 
+        // Auth attemp fail
         return response()->json([
             'error' => 'invalid-credentials',
-            'message' => 'El usuario o la contraseña son incorrectos'
+            'message' => 'El usuario o la contraseña no son correctos'
         ], 401);
-    }
 
-
-
-    public function validateLogin(Request $request)
-    {
-        return $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-            'device'   => 'required',
-        ]);
     }
 
 
