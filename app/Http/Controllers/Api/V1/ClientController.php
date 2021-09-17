@@ -18,26 +18,17 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, FilterController $filter_controller)
     {
-        // Verify permission
-        if (!$request->user()->tokenCan('clientes')) {
-            return response()->json([
-                'error' => 'unauthorized',
-                'message' => 'No posee permisos para acceder a este recurso'
-            ], 403);
-        }
 
- 
         // Specific Query (paginated)
         if($request->filled('search')){
-
 
             $filter = $request->filled('filter') ? $request->filter : 'razon_social';
 
 
-            // Validate
-            if(!(new FilterController)->validateSearch($filter, $request->search, 'clients')){
+            // Validate params
+            if(!$filter_controller->validateSearch($filter, $request->search, 'clients')){
 
                 return response()->json([
                     'error' => 'invalid-query',
@@ -46,7 +37,8 @@ class ClientController extends Controller
 
             }
 
-            // Query
+
+            // Query database
             if($filter === 'id_cliente'){
 
                 return Client::select(['id_cliente', 'razon_social'])
@@ -87,14 +79,6 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        // Verify permission
-        if (!$request->user()->tokenCan('clientes')) {
-            return response()->json([
-                'error' => 'unauthorized',
-                'message' => 'No posee permisos para acceder a este recurso'
-            ], 403);
-        }
-
         // Truncate & Insert new data
         if ($request->hasFile('DB_clientes') && $request->file('DB_clientes')->isValid()) 
         {
@@ -160,19 +144,10 @@ class ClientController extends Controller
      * @param  \App\Models\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function show($id_cliente, Request $request)
+    public function show($id_cliente, Request $request, FilterController $filter_controller)
     {
-        // Verify permission
-        if (!$request->user()->tokenCan('clientes')) {
-            return response()->json([
-                'error' => 'unauthorized',
-                'message' => 'No posee permisos para acceder a este recurso'
-            ], 403);
-        }
-
-
-        // Validate
-        if(!(new FilterController)->validateSearch('id_cliente', $id_cliente, 'clients')){
+        // Validate params
+        if(!$filter_controller->validateSearch('id_cliente', $id_cliente, 'clients')){
 
             return response()->json([
                 'error' => 'invalid-query',

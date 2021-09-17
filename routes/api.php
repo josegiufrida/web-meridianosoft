@@ -40,7 +40,7 @@ Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout'
 
 Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController::class)
     ->only(['show', 'index','store'])
-    ->middleware('auth:sanctum');
+    ->middleware(['auth:sanctum', 'permission:clientes']);
 
 
 Route::get('v1.0/filters/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters'])
