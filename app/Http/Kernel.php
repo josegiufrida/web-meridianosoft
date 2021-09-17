@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Laravel\Sanctum\Sanctum;
 
 class Kernel extends HttpKernel
 {
@@ -63,6 +64,22 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+
         'permission' => \App\Http\Middleware\VerifyPermission::class,
+        'matinance' => \App\Http\Middleware\MatinanceMode::class,
     ];
+
+    /**
+     * The priority-sorted list of middleware.
+     *
+     * Forces the listed middleware to always be in the given order.
+     *
+     * @var array
+     */
+    protected $middlewarePriority = [
+        \App\Http\Middleware\MatinanceMode::class,      // Matinance mode
+        \App\Http\Middleware\Authenticate::class,       // Auth Sanctum
+        \App\Http\Middleware\VerifyPermission::class,   // Permissions
+    ];
+    
 }
