@@ -10,6 +10,9 @@ use App\Models\Permission;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Else_;
 use App\Http\Controllers\Api\V1\FilterController;
+use App\Models\Collection;
+use App\Models\CollectionUpdate;
+use App\Models\Company;
 
 class ClientController extends Controller
 {
@@ -79,10 +82,11 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
+
         // Truncate & Insert new data
-        if ($request->hasFile('DB_clientes') && $request->file('DB_clientes')->isValid()) 
+        if ($request->hasFile('file') && $request->file('file')->isValid()) 
         {
-            $upload = $request->file('DB_clientes');
+            $upload = $request->file('file');
             $file_path = $upload->getRealPath();
             $handle = fopen($file_path, 'r');
             
@@ -90,6 +94,7 @@ class ClientController extends Controller
             $header_array = [];
             $insert_array = [];
 
+            $company_id = $request->company_data->company_id;
 
             while(!feof($handle))
             {
@@ -111,6 +116,9 @@ class ClientController extends Controller
                     $data['saldo'] = str_replace(',', '.', $data['saldo']);
                     //$data['limite_credito'] = str_replace(',', '.', $data['limite_credito']);
 
+                    // Company
+                    $data['company_id'] = $company_id;
+
                     array_push($insert_array, $data);
                 }
 
@@ -123,6 +131,14 @@ class ClientController extends Controller
 
             // Insert
             Client::upsert($insert_array, ['id_cliente']);
+
+            // Update collection updated_at timestamp
+            $collection_update = CollectionUpdate::where('company_id', $company_id)
+                ->where('collection_id', 1)
+                ->first();
+            $collection_update->updated_at = now();
+            $collection_update->save();
+
 
             fclose($handle);
 

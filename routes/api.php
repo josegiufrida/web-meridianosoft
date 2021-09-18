@@ -24,12 +24,19 @@ Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout'
 
 
 
-
+// Clients -- Show & Index
 Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController::class)
-    ->only(['show', 'index','store'])
+    ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:clientes']);
 
+// Clients -- Store
+Route::post('v1.0/clients', [App\Http\Controllers\Api\V1\ClientController::class, 'store'])
+    ->middleware(['matinance', 'permission:update']);
 
+
+
+
+// Filters
 Route::get('v1.0/filters/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters'])
     ->middleware(['matinance', 'auth:sanctum']);
 
