@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
 
         'permission' => \App\Http\Middleware\VerifyPermission::class,
         'matinance' => \App\Http\Middleware\MatinanceMode::class,
+        'update' => \App\Http\Middleware\VerifyUpdatePermission::class,
     ];
 
     /**

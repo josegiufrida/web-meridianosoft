@@ -31,7 +31,7 @@ Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController:
 
 // Clients -- Store
 Route::post('v1.0/clients', [App\Http\Controllers\Api\V1\ClientController::class, 'store'])
-    ->middleware(['matinance', 'permission:update']);
+    ->middleware(['matinance', 'update']);
 
 
 
