@@ -68,12 +68,25 @@ class LoginController extends Controller
         $user_permissions = UserPermission::where('user_id', $user_id)->where('access', 1)->get();
         
 
+        if(!$user_permissions){
+
+            // Log-out
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'error' => 'not-found',
+                'message' => 'Ha ocurrido un error en el servidor'
+            ], 404);
+
+        }
+
+
         foreach($user_permissions as $permission){
 
             $collection = $permission->collection;
 
-            // Last time collection was update
-            $updated_at = CollectionUpdate::where('company_id', $company_id)
+            // Last time collection records was updated
+            $collection_records_was_updated_at = CollectionUpdate::where('company_id', $company_id)
                 ->where('collection_id', $collection->collection_id)
                 ->first()
                 ->updated_at;
@@ -81,9 +94,9 @@ class LoginController extends Controller
             
             array_push($collections, [
                 'collection_id' => $collection->collection_id,
-                'collection_name' => $collection->collection_name,
                 'name' => $collection->name,
-                'updated_at' => $updated_at,
+                'title' => $collection->title,
+                'updated_at' => $collection_records_was_updated_at,
                 'primary_key' => $collection->primary_key
             ]);
 
@@ -115,7 +128,6 @@ class LoginController extends Controller
         $user = User::find($user_id);
         $user->last_login = now();
         $user->save();
-
 
         return response()->json($response, 200);
 

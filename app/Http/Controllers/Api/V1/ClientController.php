@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\FilterController;
 use App\Models\Collection;
 use App\Models\CollectionUpdate;
 use App\Models\Company;
+use Throwable;
 
 class ClientController extends Controller
 {
@@ -32,12 +33,7 @@ class ClientController extends Controller
 
             // Validate params
             if(!$filter_controller->validateSearch($filter, $request->search, 'clients')){
-
-                return response()->json([
-                    'error' => 'invalid-query',
-                    'message' => 'La busqueda no es valida',
-                ], 400);
-
+                return response()->json($filter_controller->getError(), 400);
             }
 
 
@@ -82,6 +78,10 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
+
+        // CAMBIOS
+        // try catch
+        // 
 
         // Truncate & Insert new data
         if ($request->hasFile('file') && $request->file('file')->isValid()) 
@@ -164,24 +164,21 @@ class ClientController extends Controller
     {
         // Validate params
         if(!$filter_controller->validateSearch('id_cliente', $id_cliente, 'clients')){
-
-            return response()->json([
-                'error' => 'invalid-query',
-                'message' => 'El ID ingresado es invalido',
-            ], 400);
-
+            return response()->json($filter_controller->getError(), 400);
         }
         
         $result = Client::where('id_cliente', $id_cliente)->first();
         
-        if($result){
-            return $result;
-        } else {
-            return response()->json([
+
+        if(!$result){
+            $error = response()->json([
                 'error' => 'not-found',
                 'message' => 'El registro no existe'
             ], 404);
         }
+
+        return $result || $error;
+        
     }
 
     /**

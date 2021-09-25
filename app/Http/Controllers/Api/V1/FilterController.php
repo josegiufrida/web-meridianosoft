@@ -8,6 +8,15 @@ use Illuminate\Support\Facades\Validator;
 
 class FilterController extends Controller
 {
+
+    public $error;
+
+    public function getError(){
+        return $this->error;
+    }
+
+
+
     public function validateSearch($filter, $search, $table){
 
         // Checkeo si el filtro corresponde a una columna
@@ -29,7 +38,16 @@ class FilterController extends Controller
 
     public function validateFilter($table, $filter){
 
-        return in_array($filter, $this->columns($table));
+        $isValid = in_array($filter, $this->columns($table));
+        
+        if(!$isValid){
+            $this->error = [
+                'error' => 'invalid-query',
+                'message' => "El filtro '$filter' no es valido",
+            ];
+        }
+
+        return $isValid;
 
     }
 
@@ -38,6 +56,12 @@ class FilterController extends Controller
 
         $array = [
             $filter => $search
+        ];
+
+        $messages = [
+            'numeric' => 'El valor debe ser numerico',
+            'max' => 'El valor exede el rango maximo',
+            'min' => 'La busqueda debe tener al menos 2 caracteres',
         ];
 
         $validator = Validator::make($array, [
@@ -60,10 +84,17 @@ class FilterController extends Controller
             'saldo'        => '',
             'limite_credito' => '',
             'observacion'  => 'min:2|max:255',
-        ]);
+        ], $messages);
 
         if($validator->fails()){
+
+            $this->error = [
+                'error' => 'invalid-query',
+                'message' => $validator->errors()->first(),
+            ];
+
             return false;
+            
         } else {
             return true;
         }
