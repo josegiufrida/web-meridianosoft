@@ -24,14 +24,27 @@ Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout'
 
 
 
-// Clients -- Show & Index
+// Update collections
+Route::post('v1.0/update', [App\Http\Controllers\Api\V1\UpdateController::class, 'update'])
+    ->middleware(['matinance', 'update']);
+
+
+
+
+// Clients -- Show & Index & Search
 Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController::class)
     ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:clientes']);
 
-// Clients -- Store
-Route::post('v1.0/clients', [App\Http\Controllers\Api\V1\ClientController::class, 'store'])
-    ->middleware(['matinance', 'update']);
+// Suppliers -- Show & Index & Search
+Route::apiResource('v1.0/suppliers', App\Http\Controllers\Api\V1\SupplierController::class)
+    ->only(['show', 'index'])
+    ->middleware(['matinance', 'auth:sanctum', 'permission:proveedores']);
+
+// Products -- Show & Index & Search
+Route::apiResource('v1.0/products', App\Http\Controllers\Api\V1\ProductController::class)
+    ->only(['show', 'index'])
+    ->middleware(['matinance', 'auth:sanctum', 'permission:articulos']);
 
 
 

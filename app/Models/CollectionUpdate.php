@@ -19,4 +19,8 @@ class CollectionUpdate extends Model
     public function collection(){
         return $this->belongsTo(Collection::class, 'collection_id');
     }
+
+    protected $fillable = [
+        'company_id', 'collection_id', 'updated_at'
+    ];
 }

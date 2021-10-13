@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 class FilterController extends Controller
 {
 
-    public $error;
+    private $error;
 
     public function getError(){
         return $this->error;
@@ -19,10 +19,10 @@ class FilterController extends Controller
 
     public function validateSearch($filter, $search, $table){
 
-        // Checkeo si el filtro corresponde a una columna
+        // Check if filter exists
         if($this->validateFilter($table, $filter)){
             
-            // Checkeo que la busqueda sea valida segun el filtro
+            // Check if search value is valid (according to filter)
             if($this->validateType($search, $filter)){
                 return true;
             } else {
@@ -36,7 +36,7 @@ class FilterController extends Controller
     }
 
 
-    public function validateFilter($table, $filter){
+    protected function validateFilter($table, $filter){
 
         $isValid = in_array($filter, $this->columns($table));
         
@@ -52,7 +52,7 @@ class FilterController extends Controller
     }
 
 
-    public function validateType($search, $filter){
+    protected function validateType($search, $filter){
 
         $array = [
             $filter => $search
@@ -66,6 +66,9 @@ class FilterController extends Controller
 
         $validator = Validator::make($array, [
             'id_cliente'   => 'numeric|max:1000000',
+            'id_proveedor' => 'numeric|max:1000000',
+            'id_articulo'  => 'numeric|max:1000000',
+
             'razon_social' => 'min:2|max:255',
             'domicilio'    => 'min:2|max:255',
             'localidad'    => 'min:2|max:255',
@@ -81,9 +84,19 @@ class FilterController extends Controller
             'id_lista'     => 'numeric',
             'lista'        => 'min:2|max:255',
             'pago'         => '',
-            'saldo'        => '',
+            'saldo_final'  => '',
             'limite_credito' => '',
             'observacion'  => 'min:2|max:255',
+
+            'descripcion'  => 'min:2|max:255',
+            'id_grupo'     => 'numeric',
+            'grupo'        => 'min:2|max:100',
+            'id_subgrupo'  => 'numeric',
+            'subgrupo'     => 'min:2|max:100',
+            'iva'          => 'numeric',
+            'codigo_barra' => 'max:50',
+            'stock'        => 'numeric',
+
         ], $messages);
 
         if($validator->fails()){
@@ -103,39 +116,24 @@ class FilterController extends Controller
 
 
 
+
     public function tables($table){
 
-        $tables = [ 'clients' ];
+        $tables = [ 'clients', 'suppliers', 'products' ];
 
         return in_array($table, $tables);
 
     }
 
-
-
-    public function columns($table){
-
-        $columns = [
-            
-            'clients' => [
-                'id_cliente', 'razon_social', 'domicilio', 'localidad', 'cp', 'provincia', 'telefono',
-                'email', 'contacto', 'bonificacion', 'zona', 'vendedor', 'cuit', 'id_lista', 'lista', 'pago', 'saldo',
-                'limite_credito', 'observacion'
-            ]
-
-        ];
-
-        return $columns[$table];
-
-    }
-
-
+    
 
     public function defaultFilter($table){
 
         $default_filter = [
             
-            'clients' => 'razon_social'
+            'clients'   => 'razon_social',
+            'suppliers' => 'razon_social',
+            'products'  => 'descripcion'
 
         ];
 
@@ -146,28 +144,68 @@ class FilterController extends Controller
 
 
 
-    public function names($id){
+    protected function columns($table){
+
+        $columns = [
+            
+            'clients' => [
+                'id_cliente', 'razon_social', 'domicilio', 'localidad', 'cp', 'provincia', 'telefono',
+                'email', 'contacto', 'bonificacion', 'zona', 'vendedor', 'cuit', 'id_lista', 'lista', 'pago', 'saldo_final',
+                'limite_credito', 'observacion'
+            ],
+
+            'suppliers' => [
+                'id_proveedor', 'razon_social', 'domicilio', 'localidad', 'cp', 'provincia', 'telefono',
+                'email', 'contacto', 'cuit', 'pago', 'saldo_final', 'observacion'
+            ],
+
+            'products' => [
+                'id_articulo', 'descripcion', 'id_grupo', 'grupo', 'id_subgrupo', 'subgrupo', 'iva', 'codigo_barra', 'stock'
+            ]
+
+        ];
+
+        return $columns[$table];
+
+    }
+
+
+    protected function names($id){
 
         $names = [
-            'id_cliente' => 'Codigo',
-            'razon_social' => 'Razon Social',
-            'domicilio' => 'Domicilio',
-            'localidad' => 'Localidad',
-            'cp' => 'CP',
-            'provincia' => 'Provincia',
-            'telefono' => 'Telefono',
-            'email' => 'Email',
-            'contacto' => 'Contacto',
-            'bonificacion' => 'Bonificacion',
-            'zona' => 'Zona',
-            'vendedor' => 'Vendedor',
-            'cuit' => 'CUIT',
-            'id_lista' => 'Cod. Lista',
-            'lista' => 'Lista',
-            'pago' => 'Pago',
-            'saldo' => 'Saldo',
+
+            'id_cliente'     => 'Codigo',
+            'id_proveedor'   => 'Codigo',
+            'id_articulo'    => 'Codigo',
+
+            'razon_social'   => 'Razon Social',
+            'domicilio'      => 'Domicilio',
+            'localidad'      => 'Localidad',
+            'cp'             => 'CP',
+            'provincia'      => 'Provincia',
+            'telefono'       => 'Telefono',
+            'email'          => 'Email',
+            'contacto'       => 'Contacto',
+            'bonificacion'   => 'Bonificacion',
+            'zona'           => 'Zona',
+            'vendedor'       => 'Vendedor',
+            'cuit'           => 'CUIT',
+            'id_lista'       => 'Cod. Lista',
+            'lista'          => 'Lista',
+            'pago'           => 'Pago',
+            'saldo_final'    => 'Saldo',
             'limite_credito' => 'Limite credito',
-            'observacion' => 'Observacion',
+            'observacion'    => 'Observacion',
+
+            'descripcion'    => 'Descripcion',
+            'id_grupo'       => 'Cod. Grupo',
+            'grupo'          => 'Grupo',
+            'id_subgrupo'    => 'Cod. Subgrupo',
+            'subgrupo'       => 'Subgrupo',
+            'iva'            => 'IVA',
+            'codigo_barra'   => 'Codigo de barra',
+            'stock'          => 'Stock',
+            
         ];
 
         return $names[$id];

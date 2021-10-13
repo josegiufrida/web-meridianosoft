@@ -3,25 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\ClientResource;
-use App\Models\Client;
-use App\Models\Business;
-use App\Models\Permission;
+use App\Models\Price;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\Else_;
-use App\Http\Controllers\Api\V1\FilterController;
-use App\Models\Collection;
-use App\Models\CollectionUpdate;
-use App\Models\Company;
-use Throwable;
 
-use Illuminate\Support\Facades\Auth;
-
-class ClientController extends Controller
+class ProductController extends Controller
 {
-
-    private $company_id;
-
     /**
      * Display a listing of the resource.
      *
@@ -35,33 +22,33 @@ class ClientController extends Controller
         // Specific Query (paginated)
         if($request->filled('search')){
 
-            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('clients');
+            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('products');
 
 
             // Validate params
-            if(!$filter_controller->validateSearch($filter, $request->search, 'clients')){
+            if(!$filter_controller->validateSearch($filter, $request->search, 'products')){
                 return response()->json($filter_controller->getError(), 400);
             }
 
 
             // Query database
-            if($filter === 'id_cliente'){
+            if($filter === 'id_articulo'){
 
-                return Client::select(['id_cliente', 'razon_social'])
-                        ->where('id_cliente', intval($request->search))
+                return Product::select(['id_articulo', 'descripcion'])
+                        ->where('id_articulo', intval($request->search))
                         ->where('company_id', $this->company_id)
                         ->paginate(20);
 
-            } else if($filter === 'razon_social'){
+            } else if($filter === 'descripcion'){
 
-                return Client::select(['id_cliente', 'razon_social'])
-                        ->where('razon_social', 'LIKE', "%$request->search%")
+                return Product::select(['id_articulo', 'descripcion'])
+                        ->where('descripcion', 'LIKE', "%$request->search%")
                         ->where('company_id', $this->company_id)
                         ->paginate(20);
 
             } else {
 
-                return Client::select(['id_cliente', 'razon_social', $filter])
+                return Product::select(['id_articulo', 'descripcion', $filter])
                     ->where($filter, 'LIKE', "%$request->search%")
                     ->where('company_id', $this->company_id)
                     ->paginate(20);
@@ -71,15 +58,22 @@ class ClientController extends Controller
         } else {
 
             // Return all records (paginated)
-            return Client::select(['id_cliente', 'razon_social'])
+            return Product::select(['id_articulo', 'descripcion'])
                 ->where('company_id', $this->company_id)
                 ->paginate(20);
 
         }
     }
-    
 
-
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -95,42 +89,65 @@ class ClientController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Client  $client
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id_cliente, Request $request, FilterController $filter_controller)
+    public function show($id_articulo, Request $request, FilterController $filter_controller)
     {
 
         $this->company_id = $request->user()->company_id;
 
         // Validate params
-        if(!$filter_controller->validateSearch('id_cliente', $id_cliente, 'clients')){
+        if(!$filter_controller->validateSearch('id_articulo', $id_articulo, 'products')){
             return response()->json($filter_controller->getError(), 400);
         }
         
-        $result = Client::where('id_cliente', $id_cliente)
+        
+        $result = Product::where('id_articulo', $id_articulo)
             ->where('company_id', $this->company_id)
             ->first();
-        
+
 
         if(!$result){
-            $error = response()->json([
+            return response()->json([
                 'error' => 'not-found',
                 'message' => 'El registro no existe'
             ], 404);
         }
 
-        return $result ?? $error;
+
+        $prices = Price::select(['precios.id_lista', 'precio', 'listas.lista', 'listas.incluye_iva'])
+            ->join('listas', 'precios.id_lista', '=', 'listas.id_lista')
+            ->where('precios.id_articulo', $id_articulo)
+            ->where('precios.company_id', $this->company_id)
+            ->where('listas.company_id', $this->company_id)
+            ->get();
+            
+        $result['precio'] = $prices;
+
+
+        return $result;
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Client  $client
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Client $client)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -138,10 +155,10 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Client  $client
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
+    public function destroy($id)
     {
         //
     }
