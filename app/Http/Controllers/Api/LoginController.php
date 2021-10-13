@@ -101,7 +101,7 @@ class LoginController extends Controller
             ]);
 
             
-            array_push($abilities, $collection->collection_name);
+            array_push($abilities, $collection->name);
 
         }
 
