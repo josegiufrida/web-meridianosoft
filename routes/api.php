@@ -41,8 +41,8 @@ Route::apiResource('v1.0/proveedores', App\Http\Controllers\Api\V1\SupplierContr
     ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:proveedores']);
 
-// Productos -- Show & Index & Search
-Route::apiResource('v1.0/productos', App\Http\Controllers\Api\V1\ProductController::class)
+// Articulos -- Show & Index & Search
+Route::apiResource('v1.0/articulos', App\Http\Controllers\Api\V1\ProductController::class)
     ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:articulos']);
 
