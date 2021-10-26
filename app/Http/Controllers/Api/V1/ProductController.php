@@ -22,11 +22,11 @@ class ProductController extends Controller
         // Specific Query (paginated)
         if($request->filled('search')){
 
-            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('products');
+            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('productos');
 
 
             // Validate params
-            if(!$filter_controller->validateSearch($filter, $request->search, 'products')){
+            if(!$filter_controller->validateSearch($filter, $request->search, 'productos')){
                 return response()->json($filter_controller->getError(), 400);
             }
 
@@ -98,7 +98,7 @@ class ProductController extends Controller
         $this->company_id = $request->user()->company_id;
 
         // Validate params
-        if(!$filter_controller->validateSearch('id_articulo', $id_articulo, 'products')){
+        if(!$filter_controller->validateSearch('id_articulo', $id_articulo, 'productos')){
             return response()->json($filter_controller->getError(), 400);
         }
         

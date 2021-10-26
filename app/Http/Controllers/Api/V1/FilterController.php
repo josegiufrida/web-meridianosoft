@@ -119,7 +119,7 @@ class FilterController extends Controller
 
     public function tables($table){
 
-        $tables = [ 'clients', 'suppliers', 'products' ];
+        $tables = [ 'clientes', 'proveedores', 'productos' ];
 
         return in_array($table, $tables);
 
@@ -131,9 +131,9 @@ class FilterController extends Controller
 
         $default_filter = [
             
-            'clients'   => 'razon_social',
-            'suppliers' => 'razon_social',
-            'products'  => 'descripcion'
+            'clientes'    => 'razon_social',
+            'proveedores' => 'razon_social',
+            'productos'   => 'descripcion'
 
         ];
 
@@ -148,18 +148,18 @@ class FilterController extends Controller
 
         $columns = [
             
-            'clients' => [
+            'clientes' => [
                 'id_cliente', 'razon_social', 'domicilio', 'localidad', 'cp', 'provincia', 'telefono',
                 'email', 'contacto', 'bonificacion', 'zona', 'vendedor', 'cuit', 'id_lista', 'lista', 'pago', 'saldo_final',
                 'limite_credito', 'observacion'
             ],
 
-            'suppliers' => [
+            'proveedores' => [
                 'id_proveedor', 'razon_social', 'domicilio', 'localidad', 'cp', 'provincia', 'telefono',
                 'email', 'contacto', 'cuit', 'pago', 'saldo_final', 'observacion'
             ],
 
-            'products' => [
+            'productos' => [
                 'id_articulo', 'descripcion', 'id_grupo', 'grupo', 'id_subgrupo', 'subgrupo', 'iva', 'codigo_barra', 'stock'
             ]
 

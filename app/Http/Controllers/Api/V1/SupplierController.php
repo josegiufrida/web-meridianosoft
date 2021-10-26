@@ -21,11 +21,11 @@ class SupplierController extends Controller
         // Specific Query (paginated)
         if($request->filled('search')){
 
-            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('suppliers');
+            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('proveedores');
 
 
             // Validate params
-            if(!$filter_controller->validateSearch($filter, $request->search, 'suppliers')){
+            if(!$filter_controller->validateSearch($filter, $request->search, 'proveedores')){
                 return response()->json($filter_controller->getError(), 400);
             }
 
@@ -97,7 +97,7 @@ class SupplierController extends Controller
         $this->company_id = $request->user()->company_id;
 
         // Validate params
-        if(!$filter_controller->validateSearch('id_proveerdor', $id_proveerdor, 'suppliers')){
+        if(!$filter_controller->validateSearch('id_proveerdor', $id_proveerdor, 'proveedores')){
             return response()->json($filter_controller->getError(), 400);
         }
         

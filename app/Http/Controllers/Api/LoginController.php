@@ -96,6 +96,8 @@ class LoginController extends Controller
                 'collection_id' => $collection->collection_id,
                 'name' => $collection->name,
                 'title' => $collection->title,
+                'search' => "v1.0/$collection->name",
+                'filters' => "v1.0/filtros/$collection->name",
                 'updated_at' => $collection_records_was_updated_at,
                 'primary_key' => $collection->primary_key
             ]);

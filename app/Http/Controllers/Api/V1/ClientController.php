@@ -35,11 +35,11 @@ class ClientController extends Controller
         // Specific Query (paginated)
         if($request->filled('search')){
 
-            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('clients');
+            $filter = $request->filled('filter') ? $request->filter : $filter_controller->defaultFilter('clientes');
 
 
             // Validate params
-            if(!$filter_controller->validateSearch($filter, $request->search, 'clients')){
+            if(!$filter_controller->validateSearch($filter, $request->search, 'clientes')){
                 return response()->json($filter_controller->getError(), 400);
             }
 
@@ -104,7 +104,7 @@ class ClientController extends Controller
         $this->company_id = $request->user()->company_id;
 
         // Validate params
-        if(!$filter_controller->validateSearch('id_cliente', $id_cliente, 'clients')){
+        if(!$filter_controller->validateSearch('id_cliente', $id_cliente, 'clientes')){
             return response()->json($filter_controller->getError(), 400);
         }
         

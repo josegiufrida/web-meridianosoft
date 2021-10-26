@@ -31,18 +31,18 @@ Route::post('v1.0/update', [App\Http\Controllers\Api\V1\UpdateController::class,
 
 
 
-// Clients -- Show & Index & Search
-Route::apiResource('v1.0/clients', App\Http\Controllers\Api\V1\ClientController::class)
+// Clientes -- Show & Index & Search
+Route::apiResource('v1.0/clientes', App\Http\Controllers\Api\V1\ClientController::class)
     ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:clientes']);
 
-// Suppliers -- Show & Index & Search
-Route::apiResource('v1.0/suppliers', App\Http\Controllers\Api\V1\SupplierController::class)
+// Proveedores -- Show & Index & Search
+Route::apiResource('v1.0/proveedores', App\Http\Controllers\Api\V1\SupplierController::class)
     ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:proveedores']);
 
-// Products -- Show & Index & Search
-Route::apiResource('v1.0/products', App\Http\Controllers\Api\V1\ProductController::class)
+// Productos -- Show & Index & Search
+Route::apiResource('v1.0/productos', App\Http\Controllers\Api\V1\ProductController::class)
     ->only(['show', 'index'])
     ->middleware(['matinance', 'auth:sanctum', 'permission:articulos']);
 
@@ -50,6 +50,6 @@ Route::apiResource('v1.0/products', App\Http\Controllers\Api\V1\ProductControlle
 
 
 // Filters
-Route::get('v1.0/filters/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters'])
+Route::get('v1.0/filtros/{table}', [App\Http\Controllers\Api\V1\FilterController::class, 'getFilters'])
     ->middleware(['matinance', 'auth:sanctum']);
 
