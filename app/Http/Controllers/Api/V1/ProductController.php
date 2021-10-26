@@ -116,7 +116,7 @@ class ProductController extends Controller
         }
 
 
-        $prices = Price::select(['precios.id_lista', 'precio', 'listas.lista', 'listas.incluye_iva'])
+        $prices = Price::select(['precios.id_lista', 'precio', 'listas.nombre', 'listas.incluye_iva'])
             ->join('listas', 'precios.id_lista', '=', 'listas.id_lista')
             ->where('precios.id_articulo', $id_articulo)
             ->where('precios.company_id', $this->company_id)
