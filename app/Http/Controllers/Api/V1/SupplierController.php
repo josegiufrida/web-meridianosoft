@@ -91,17 +91,17 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id_proveerdor, Request $request, FilterController $filter_controller)
+    public function show($id_proveedor, Request $request, FilterController $filter_controller)
     {
 
         $this->company_id = $request->user()->company_id;
 
         // Validate params
-        if(!$filter_controller->validateSearch('id_proveerdor', $id_proveerdor, 'proveedores')){
+        if(!$filter_controller->validateSearch('id_proveedor', $id_proveedor, 'proveedores')){
             return response()->json($filter_controller->getError(), 400);
         }
         
-        $result = Supplier::where('id_proveerdor', $id_proveerdor)
+        $result = Supplier::where('id_proveedor', $id_proveedor)
             ->where('company_id', $this->company_id)
             ->first();
 
