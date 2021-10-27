@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Models\PersonalAccessToken;
+use App\Models\PriceList;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,7 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function(){
+            PersonalAccessToken::where('last_used_at', '<', now()->subMonth())->delete();
+        })->daily();
     }
 
     /**

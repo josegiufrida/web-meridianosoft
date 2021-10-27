@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CleanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+// Log in
 Route::post('login', [App\Http\Controllers\Api\LoginController::class, 'login'])
     ->middleware('matinance');
 
+// Log out
 Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout'])
     ->middleware('auth:sanctum');
 
