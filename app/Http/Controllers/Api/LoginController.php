@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\V1\FilterController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ use App\Models\UserPermission;
 
 class LoginController extends Controller
 {
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, FilterController $filterController)
     {
 
         // If Auth Attemp Fail
@@ -98,6 +99,7 @@ class LoginController extends Controller
                 'title' => $collection->title,
                 'search' => "v1.0/$collection->name",
                 'filters' => "v1.0/filtros/$collection->name",
+                'title_field' => $filterController->titleColumn($collection->name),
                 'updated_at' => $collection_records_was_updated_at,
                 'primary_key' => $collection->primary_key
             ]);

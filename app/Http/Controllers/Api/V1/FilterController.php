@@ -116,7 +116,7 @@ class FilterController extends Controller
 
 
 
-
+    // Available tables for search
     public function tables($table){
 
         $tables = [ 'clientes', 'proveedores', 'articulos' ];
@@ -125,8 +125,24 @@ class FilterController extends Controller
 
     }
 
+
+    // Column name of table
+    public function titleColumn($table){
+
+        $default_filter = [
+            
+            'clientes'    => 'razon_social',
+            'proveedores' => 'razon_social',
+            'articulos'   => 'descripcion'
+
+        ];
+
+        return $default_filter[$table];
+
+    }
     
 
+    // Default filter for table search
     public function defaultFilter($table){
 
         $default_filter = [
@@ -143,7 +159,7 @@ class FilterController extends Controller
 
 
 
-
+    // Available columns on each table
     protected function columns($table){
 
         $columns = [
@@ -169,7 +185,7 @@ class FilterController extends Controller
 
     }
 
-
+    // Coloquial name for columns name
     protected function names($id){
 
         $names = [
