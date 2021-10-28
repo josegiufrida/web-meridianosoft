@@ -91,6 +91,9 @@ class UpdateController extends Controller
             if( $line === '' ){
                 continue;
             }
+
+            // Convert to UTF-8 (ñ)
+            $line = mb_convert_encoding($line, 'UTF-8', 'UTF-8');
             
             if( $line_number === 0 ){
                 $columns_array = explode(';', strtolower($line));
