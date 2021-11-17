@@ -31,6 +31,14 @@ Route::post('logout', [App\Http\Controllers\Api\LoginController::class, 'logout'
 Route::post('v1.0/update', [App\Http\Controllers\Api\V1\UpdateController::class, 'update'])
     ->middleware(['matinance', 'update']);
 
+// New Company
+Route::post('v1.0/new/company', [App\Http\Controllers\Api\V1\newUserController::class, 'company'])
+    ->middleware(['matinance']);
+
+// New User
+Route::post('v1.0/new/user', [App\Http\Controllers\Api\V1\newUserController::class, 'user'])
+    ->middleware(['matinance']);
+
 
 
 
