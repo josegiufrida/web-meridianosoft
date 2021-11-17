@@ -87,10 +87,11 @@ class LoginController extends Controller
             $collection = $permission->collection;
 
             // Last time collection records was updated
-            $collection_records_was_updated_at = CollectionUpdate::where('company_id', $company_id)
+            $collection_records = CollectionUpdate::where('company_id', $company_id)
                 ->where('collection_id', $collection->collection_id)
-                ->first()
-                ->updated_at;
+                ->first();
+
+            $collection_records_was_updated_at = $collection_records ? $collection_records->updated_at : null;
 
             
             array_push($collections, [

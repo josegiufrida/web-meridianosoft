@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class newUserController extends Controller
 {
@@ -82,7 +83,7 @@ class newUserController extends Controller
         $user->company_id = $request->company_id;
         $user->name       = $request->name;
         $user->username   = $request->username;
-        $user->password   = $request->password;
+        $user->password   = Hash::make($request->password); // Save encrypted password
 
         $user->save();
 
