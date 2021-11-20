@@ -12,7 +12,7 @@ class CollectionUpdate extends Model
 
     protected $table = 'collections_updates';
 
-    protected $primaryKey = 'collection_id';
+    protected $primaryKey = 'update_id';
 
     public $timestamps = false;
 
