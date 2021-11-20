@@ -37,21 +37,24 @@ class ProductController extends Controller
                 return Product::select(['id_articulo', 'descripcion'])
                         ->where('id_articulo', intval($request->search))
                         ->where('company_id', $this->company_id)
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
             } else if($filter === 'descripcion'){
 
                 return Product::select(['id_articulo', 'descripcion'])
                         ->where('descripcion', 'LIKE', "%$request->search%")
                         ->where('company_id', $this->company_id)
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
             } else {
 
                 return Product::select(['id_articulo', 'descripcion', $filter])
                     ->where($filter, 'LIKE', "%$request->search%")
                     ->where('company_id', $this->company_id)
-                    ->paginate(20);
+                    ->paginate(20)
+                    ->withQueryString();
 
             }
 

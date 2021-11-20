@@ -50,21 +50,24 @@ class ClientController extends Controller
                 return Client::select(['id_cliente', 'razon_social'])
                         ->where('id_cliente', intval($request->search))
                         ->where('company_id', $this->company_id)
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
             } else if($filter === 'razon_social'){
 
                 return Client::select(['id_cliente', 'razon_social'])
                         ->where('razon_social', 'LIKE', "%$request->search%")
                         ->where('company_id', $this->company_id)
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
             } else {
 
                 return Client::select(['id_cliente', 'razon_social', $filter])
                     ->where($filter, 'LIKE', "%$request->search%")
                     ->where('company_id', $this->company_id)
-                    ->paginate(20);
+                    ->paginate(20)
+                    ->withQueryString();
 
             }
 

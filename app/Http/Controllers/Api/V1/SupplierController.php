@@ -36,21 +36,24 @@ class SupplierController extends Controller
                 return Supplier::select(['id_proveedor', 'razon_social'])
                         ->where('id_proveedor', intval($request->search))
                         ->where('company_id', $this->company_id)
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
             } else if($filter === 'razon_social'){
 
                 return Supplier::select(['id_proveedor', 'razon_social'])
                         ->where('razon_social', 'LIKE', "%$request->search%")
                         ->where('company_id', $this->company_id)
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
             } else {
 
                 return Supplier::select(['id_proveedor', 'razon_social', $filter])
                     ->where($filter, 'LIKE', "%$request->search%")
                     ->where('company_id', $this->company_id)
-                    ->paginate(20);
+                    ->paginate(20)
+                    ->withQueryString();
 
             }
 
